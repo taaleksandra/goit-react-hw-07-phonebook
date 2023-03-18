@@ -4,12 +4,12 @@ import clsx from 'clsx';
 
 import css from '../ContactForm/ContactForm.module.css';
 
-import { addContact } from 'redux/contactsSlice';
-import { getContacts } from 'redux/selectors';
+import { addContact } from 'redux/operations';
+import { selectContacts } from 'redux/selectors';
 
 export const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
 
   const handleSubmit = evt => {
     evt.preventDefault();
@@ -17,16 +17,23 @@ export const ContactForm = () => {
     const name = form.elements.name.value;
     const number = form.elements.number.value;
 
+    const contact = {
+      name,
+      number,
+    };
+
     const existingContact = contacts.find(
       contact => contact.name.toLowerCase() === name.toLowerCase()
     );
 
-    if (existingContact) {
+    const existingNumber = contacts.find(contact => contact.number === number);
+
+    if (existingContact || existingNumber) {
       alert(`${name} is already in contacts`);
       return;
     }
 
-    dispatch(addContact(name, number));
+    dispatch(addContact(contact));
 
     form.reset();
   };
